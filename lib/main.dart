@@ -55,6 +55,12 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Widget> _children;
   RouteFactory _onGenerateRoute;
 
+  final Map<int, GlobalKey<NavigatorState>> _navigatorKeys = {
+    TabItem.home.index: GlobalKey<NavigatorState>(),
+    TabItem.message.index: GlobalKey<NavigatorState>(),
+    TabItem.profile.index: GlobalKey<NavigatorState>(),
+  };
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -63,24 +69,24 @@ class _MyHomePageState extends State<MyHomePage> {
             .onGenerateRoute;
 
     _children = [
-      Navigator(
-        key: GlobalKey<NavigatorState>(),
-        initialRoute: Home.pageName,
-        onGenerateRoute: _onGenerateRoute,
-      ),
-      Navigator(
-        key: GlobalKey<NavigatorState>(),
-        initialRoute: Message.pageName,
-        onGenerateRoute: _onGenerateRoute,
-      ),
-      Navigator(
-        key: GlobalKey<NavigatorState>(),
-        initialRoute: Profile.pageName,
-        onGenerateRoute: _onGenerateRoute,
-      ),
-//      Top(tabName: "Home"),
-//      Top(tabName: "Message"),
-//      Top(tabName: "Profile"),
+//      Navigator(
+//        key: _navigatorKeys[TabItem.home.index],
+//        initialRoute: Home.pageName,
+//        onGenerateRoute: _onGenerateRoute,
+//      ),
+//      Navigator(
+//        key: _navigatorKeys[TabItem.message.index],
+//        initialRoute: Message.pageName,
+//        onGenerateRoute: _onGenerateRoute,
+//      ),
+//      Navigator(
+//        key: _navigatorKeys[TabItem.profile.index],
+//        initialRoute: Profile.pageName,
+//        onGenerateRoute: _onGenerateRoute,
+//      ),
+      Top(tabName: "Home"),
+      Top(tabName: "Message"),
+      Top(tabName: "Profile"),
     ];
   }
 
@@ -93,6 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
+      //body: _buildBodyStack(),
       body: _children[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,
@@ -112,6 +119,40 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
+    );
+  }
+
+  _buildBodyStack() {
+    return Stack(
+      children: <Widget>[
+        Visibility(
+          maintainState: true,
+          visible: _currentIndex == 0,
+          child: Navigator(
+            key: _navigatorKeys[TabItem.home.index],
+            initialRoute: Home.pageName,
+            onGenerateRoute: _onGenerateRoute,
+          ),
+        ),
+        Visibility(
+          maintainState: true,
+          visible: _currentIndex == 1,
+          child: Navigator(
+            key: _navigatorKeys[TabItem.message.index],
+            initialRoute: Message.pageName,
+            onGenerateRoute: _onGenerateRoute,
+          ),
+        ),
+        Visibility(
+          maintainState: true,
+          visible: _currentIndex == 2,
+          child: Navigator(
+            key: _navigatorKeys[TabItem.profile.index],
+            initialRoute: Profile.pageName,
+            onGenerateRoute: _onGenerateRoute,
+          ),
+        ),
+      ],
     );
   }
 
@@ -169,7 +210,7 @@ class Home extends StatelessWidget {
             FlatButton(
               child: Text("Go to detail"),
               onPressed: () {
-                Navigator.of(context)
+                Navigator.of(context) // rootNavigator: rootNavigator
                     .push(MaterialPageRoute(builder: (context) {
                   return Detail(prefixStr: "Home");
                 }));
@@ -253,4 +294,10 @@ class Detail extends StatelessWidget {
       body: Center(child: Text("$prefixStr Detail")),
     );
   }
+}
+
+enum TabItem {
+  home,
+  message,
+  profile,
 }
